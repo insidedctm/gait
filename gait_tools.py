@@ -1,5 +1,5 @@
-from skimage.io import imread
-from skimage.io import imsave
+#from skimage.io import imread
+#from skimage.io import imsave
 from scipy.misc import imresize
 import numpy as np
 import os

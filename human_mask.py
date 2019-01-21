@@ -21,4 +21,6 @@ if __name__ == '__main__':
     parser.add_argument('video_path', help='Video to process')
     args = parser.parse_args()
 
+    if args.video_path.isdigit():
+        args.video_path = int(args.video_path)
     show_bg_subtraction(args.video_path)
