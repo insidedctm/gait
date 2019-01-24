@@ -8,6 +8,43 @@ import cv2
 
 logger = logging.getLogger("tool")
 
+args = None
+
+
+def head_finder(frame):
+    '''
+    Searches a binary mask image to find the centroid of the 10% of positive pixels (counting from the top row). The
+    idea is this should be the head.
+    :param frame: Grayscale image, np.array
+    :return: (x,y) of the centroid, (int, int)
+    '''
+    h, w = frame.shape[:2]
+    HEAD_PERCENTAGE = .1
+    total_pixels = np.sum(frame)
+    head_pixels = total_pixels * HEAD_PERCENTAGE
+
+    cumul_frame = np.cumsum(frame)
+    cumul_rows = cumul_frame[w::w]
+    top_pct = np.where(cumul_rows > head_pixels)[0][0]
+
+    M = cv2.moments(frame[:top_pct])
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
+
+    return int(cX), int(cY)
+
+
+def waist_finder(frame_thresh):
+    '''
+    Searches a binary mask image to find the centroid of the positive pixels. This should roughly be the waist
+    for a full-length body.
+    :param frame: Grayscale image, np.array
+    :return: (x,y) of the centroid, (int, int)
+    '''
+    Mtot = cv2.moments(frame_thresh[:, :])
+    cXtot = int(Mtot["m10"] / Mtot["m00"])
+    cYtot = int(Mtot["m01"] / Mtot["m00"])
+    return cXtot, cYtot
 
 def shift_left(img, left=10.0, is_grey=True):
     """
@@ -197,6 +234,7 @@ def build_GEI(img_list):
     :param img_list: a list of grey image numpy.array data
     :return:
     """
+    global args
     norm_width = 70
     norm_height = 210
     result = np.zeros((norm_height, norm_width), dtype=np.int)
@@ -207,6 +245,10 @@ def build_GEI(img_list):
             human_extract_list.append(center_person(extract_human(img), (norm_height, norm_width)))
         except:
             logger.warning("fail to extract human from image")
+    if args.viz:
+        for img in human_extract_list:
+            cv2.imshow('debug', img)
+            cv2.waitKey(10)
     try:
         human_extract_list = np.array(human_extract_list)
         print(type(human_extract_list))
@@ -241,6 +283,9 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('image_path')
+    parser.add_argument('--start', default=70, type=int)
+    parser.add_argument('--end', default=190, type=int)
+    parser.add_argument('--viz', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -255,11 +300,12 @@ if __name__ == '__main__':
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    img_path = 'vibe_out'
+    img_path = args.image_path.split('/')[0]
     img_list = sorted(load_image_path_list(img_path))
-    img_list = img_list[70:190]
+    img_list = img_list[args.start:args.end]
     print('img_list: {}'.format(img_list))
     img_data_list = image_path_list_to_image_pic_list(img_list)
+
     GEI_image = build_GEI(img_data_list) 
     cv2.imshow('GEI', GEI_image)
     cv2.waitKey(0)
