@@ -51,7 +51,7 @@ if __name__ == '__main__':
     resolution = '432x368'
     w, h = model_wh(resolution)
     e = TfPoseEstimator(get_graph_path(model), target_size=(w, h))
-    resize_out_ratio = 4.0
+    resize_out_ratio = 8.0
     video = cv2.VideoCapture(args.input_path)
     angles = []
     frame_count = 0
