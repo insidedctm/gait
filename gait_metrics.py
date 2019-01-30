@@ -39,22 +39,30 @@ def get_stride_angle(human):
     angle = angle / np.pi * 180
     return angle
 
+def get_pose_estimator():
+    model = 'mobilenet_thin'
+    resolution = '432x368'
+    w, h = model_wh(resolution)
+    e = TfPoseEstimator(get_graph_path(model), target_size=(w, h))
+    return e
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('input_path', help='path to a video')
     parser.add_argument('output_path', help='path to output the metrics')
     parser.add_argument('start', type=int, help='First frame of the sequence')
     parser.add_argument('end', type=int, help='Last frame of the sequence')
+    parser.add_argument('--display', action='store_true', help='Visually display the detections')
+    parser.add_argument('--display_wait_time', default=30, type=int,
+                        help='wait time (ms) between display of frames [30]')
     args = parser.parse_args()
 
-    model = 'mobilenet_thin'
-    resolution = '432x368'
-    w, h = model_wh(resolution)
-    e = TfPoseEstimator(get_graph_path(model), target_size=(w, h))
+    e = get_pose_estimator()
     resize_out_ratio = 8.0
     video = cv2.VideoCapture(args.input_path)
     angles = []
     frame_count = 0
+    angle = 0.
     while True:
         ok, frame = video.read()
         if not ok:
@@ -63,10 +71,17 @@ if __name__ == '__main__':
         if frame_count < args.start or frame_count > args.end:
             continue
         humans = e.inference(frame, resize_to_default=True, upsample_size=resize_out_ratio)
+        if args.display:
+            e.draw_humans(frame, humans)
+            cv2.imshow('', frame)
+            cv2.waitKey(args.display_wait_time)
         if len(humans) > 0:
             angle = get_stride_angle(humans[0])
         print(angle)
         angles.append(angle)
     plt.plot(angles)
+    plt.title('Stride Angle')
+    plt.xlabel('Frame #')
+    plt.ylabel('Stride Angle (deg)')
     plt.show()
     np.save(args.output_path, angles)
