@@ -9,7 +9,7 @@ Recognise people by their gait and analyse their gait
 ### Construct Gait Energy Images (GEI) from video
 A GEI (see the Hoffman paper in 'papers') is a compression of a binary mask silhouette into a single binary image:
 
-!(https://github.com/insidedctm/gait/images/normal_id001_1.avi_1.png)
+![GEI example](https://github.com/insidedctm/gait/images/normal_id001_1.avi_1.png)
 
 Given a video a GEI can be constructed as follows, storing in the directory `data/gei/GaitRecogniser` to be used to train a 
 Gait Recogniser model.
