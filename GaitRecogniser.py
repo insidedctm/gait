@@ -22,12 +22,10 @@ class GaitRecogniser:
         files = glob.glob('{}/*.png'.format(self.database_path))
         train_imgs = np.array([self.get_image(f) for f in files])
         train_labels = np.array([self.get_label(f) for f in files])
-        print('train_labels.shape={}'.format(train_labels.shape))
 
         # training
-        train_reduced = self.pca.fit_transform(train_imgs); print('train_reduced.shape={}'.format(train_reduced.shape))
+        train_reduced = self.pca.fit_transform(train_imgs)
         train_lda_reduced = self.lda.fit_transform(train_reduced, train_labels)
-        print('train_lda_reduced.shape={}'.format(train_lda_reduced.shape))
         self.knn.fit(train_lda_reduced, train_labels)
 
     def predict(self, gei_img):
@@ -50,9 +48,9 @@ class GaitRecogniser:
 
     def get_label(self, file_path):
         # file_path assumed to have the following format: /path/to/database/{label}_{id}.png
-        file_name = file_path.split(os.path.sep)[-1]; print('get_label: file_name={}'.format(file_name))
+        file_name = file_path.split(os.path.sep)[-1]
         p = re.compile('(.*)\_\d+.png')
-        label = p.match(file_name).group(1); print('get_label: label={}'.format(label))
+        label = p.match(file_name).group(1)
         return label
 
 if __name__ == '__main__':

@@ -96,7 +96,7 @@ def smooth(angles, fps):
     max_power_i = np.argmax(power)
     if max_power_i == 0:
         max_power_i = np.argmax(power[1:]) + 1
-    fft_freq_at_max_power = fft_freq[max_power_i]
+    fft_freq_at_max_power = np.abs(fft_freq[max_power_i])
     print('Freq at max power: {}'.format(fft_freq_at_max_power))
     # filter out frequencies that are significantly greater than the max frequency
     # and calculate the inverse FFT
