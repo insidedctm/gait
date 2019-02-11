@@ -24,7 +24,7 @@ Using the GEI generation process we can examine how people's gait changes with r
 pain they are experiencing. The GEIs below measure the gait of a person experiencing pain walking contrasted with the same person
 without pain.
 
-![GEI no pain v pain](images/nopain_v_pain?raw=true)
+![GEI no pain v pain](images/nopain_v_pain.png?raw=true)
 
 ### Using the GaitRecogniser
 The GaitRecogniser class implements a model trained on a database of GEI images. The database, by convention, 
