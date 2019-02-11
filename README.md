@@ -4,10 +4,10 @@ Recognise people by their gait and analyse their gait
 ### Installation
 * clone this repository
 * ensure the tf-pose-estimation application is installed in the root directory
-* pip install opencv-python pandas scikit-learn
+* pip install opencv-python opencv-contrib-python pandas scikit-learn
 
 ### Construct Gait Energy Images (GEI) from video
-A GEI (see the Hoffman paper in 'papers') is a compression of a binary mask silhouette into a single binary image:
+A GEI (see the Hoffman paper in 'papers') is a compression of a sequence of binary mask silhouettes into a single binary image:
 
 ![GEI example](images/normal_id001_1.avi_1.png?raw=true)
 
@@ -17,6 +17,14 @@ Gait Recogniser model.
 ```
 python make_gei_from_raw.py /path/to/video.mov data/gei/GaitRecogniser 120 310
 ```
+
+The last 2 parameters are the start and end frame to be processed in the video.
+
+Using the GEI generation process we can examine how people's gait changes with respect to their physical state such as how much 
+pain they are experiencing. The GEIs below measure the gait of a person experiencing pain walking contrasted with the same person
+without pain.
+
+![GEI no pain v pain](images/nopain_v_pain?raw=true)
 
 ### Using the GaitRecogniser
 The GaitRecogniser class implements a model trained on a database of GEI images. The database, by convention, 
