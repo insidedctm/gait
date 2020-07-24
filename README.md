@@ -15,7 +15,7 @@ Given a video a GEI can be constructed as follows, storing in the directory `dat
 Gait Recogniser model.
 
 ```
-python make_gei_from_raw.py /path/to/video.mov data/gei/GaitRecogniser 120 310
+python make_gei_from_raw.py /path/to/video.mov data/gei/GaitRecogniser/video_gei.pn 120 310
 ```
 
 The last 2 parameters are the start and end frame to be processed in the video.

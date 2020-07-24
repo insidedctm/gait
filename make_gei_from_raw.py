@@ -6,7 +6,7 @@ DESCRIPTION = '''
     Make Gait Energy Images for a given sequence of raw video frames
 '''
 
-def make_gei_from_raw(frames, weight_thresh=1.5, hog_width=400, display=False):
+def make_gei_from_raw(frames, weight_thresh=1.5, hog_width=400, display=False, dump_silhouettes=False):
     '''
     Takes a series of video frames (assumed to contain no more than one human) and does the following:
         - Performs background subtraction
@@ -65,6 +65,10 @@ def make_gei_from_raw(frames, weight_thresh=1.5, hog_width=400, display=False):
             # direction tracking
             going_right.append(x > last_x)
             last_x = x
+
+    if dump_silhouettes:
+        print('dumping silhouettes')
+        show_silhouettes(silhouettes)
 
     # construct Gait Energy Image
     if len(silhouettes) > 0:
@@ -132,6 +136,16 @@ def put_image_text(img, lines, text_start, font_face=cv2.FONT_HERSHEY_DUPLEX,
         loc_y += h + baseline
         line_count += 1
 
+def show_silhouettes(silhouettes):
+    '''
+    Given an array of silhouettes to be used to generate a GEI, output each silhouette for inspection
+    :param silhouettes: array of silhouettes, np.array([h, w])
+    :return: None
+    '''
+    for s in silhouettes:
+        cv2.imshow('Dump silhouettes', s)
+        cv2.waitKey(100)
+
 def parse_args():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('input_path')
@@ -140,6 +154,7 @@ def parse_args():
     parser.add_argument('end_frame', type=int)
     parser.add_argument('--flip_vert', action='store_true', help='Flip the video vertically [False]')
     parser.add_argument('--test_mode', action='store_true', help="Just show the bounding boxes, don't save GEI image")
+    parser.add_argument('--dump_silhouettes', action='store_true', help='Show each silhouette before creating GEI')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -166,7 +181,7 @@ if __name__ == '__main__':
 
         frame_count += 1
 
-    gei_img = make_gei_from_raw(frames, weight_thresh=0.5, display=True)
+    gei_img = make_gei_from_raw(frames, weight_thresh=0.5, display=True, dump_silhouettes=args.dump_silhouettes)
 
     if not args.test_mode:
         cv2.imwrite(args.output_path, gei_img)
